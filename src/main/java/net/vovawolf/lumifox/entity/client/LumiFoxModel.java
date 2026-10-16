@@ -1,5 +1,7 @@
 package net.vovawolf.lumifox.entity.client;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import net.minecraft.client.model.FoxModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -88,6 +90,12 @@ public class LumiFoxModel<T extends LumiFox> extends FoxModel<T> {
                 PartPose.offsetAndRotation(0.0F, -10.25F, 7.0F, -0.3926991F, 0.0F, 0.0F));
 
         return LayerDefinition.create(mesh, 48, 48);
+    }
+
+    // FoxModel не включает дополнительные корневые части в bodyParts(), поэтому добавляем рюкзак.
+    @Override
+    protected Iterable<ModelPart> bodyParts() {
+        return Iterables.concat(super.bodyParts(), ImmutableList.of(this.backpack));
     }
 
     // Ванильные анимации лисы остаются как есть (super), поверх добавляем вилянье хвостом
