@@ -1,5 +1,9 @@
 package net.vovawolf.lumifox.entity;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -18,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.vovawolf.lumifox.registry.ModItems;
 
 /**
  * Класс умной лисички Lumi, наследуется от ванильной лисы
@@ -25,9 +30,50 @@ import net.minecraft.world.level.Level;
  */
 public class LumiFox extends Fox {
 
+    // Надет ли рюкзак (синхронизируется с клиентом, чтобы модель знала, показывать ли его)
+    private static final EntityDataAccessor<Boolean> DATA_BACKPACK =
+            SynchedEntityData.defineId(LumiFox.class, EntityDataSerializers.BOOLEAN);
+
     // Конструктор для создания сущности LumiFox
     public LumiFox(EntityType<? extends Fox> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_BACKPACK, false);
+    }
+
+    public boolean hasBackpack() {
+        return this.entityData.get(DATA_BACKPACK);
+    }
+
+    public void setBackpack(boolean value) {
+        this.entityData.set(DATA_BACKPACK, value);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putBoolean("LumiBackpack", this.hasBackpack());
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        this.setBackpack(tag.getBoolean("LumiBackpack"));
+    }
+
+    /**
+     * Если Lumi погибла в рюкзаке, он выпадает
+     */
+    @Override
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
+        super.dropCustomDeathLoot(source, looting, recentlyHit);
+        if (this.hasBackpack()) {
+            this.spawnAtLocation(new ItemStack(ModItems.LUMI_BACKPACK.get()));
+        }
     }
 
     /**
@@ -64,6 +110,8 @@ public class LumiFox extends Fox {
 
     /**
      * Взаимодействие с игроком:
+     *  - ПКМ рюкзаком: надеть рюкзак на Lumi
+     *  - Shift + ПКМ пустой рукой (пасть пуста): снять рюкзак
      *  - ПКМ пустой рукой: Lumi отдаёт предмет из пасти
      *  - Shift + ПКМ предметом: Lumi берёт один такой предмет в пасть (если пасть свободна)
      *  - ПКМ сладкими ягодами: лечит Lumi
@@ -77,6 +125,31 @@ public class LumiFox extends Fox {
 
         ItemStack playerStack = player.getItemInHand(hand);
         ItemStack mouthStack = this.getItemBySlot(EquipmentSlot.MAINHAND);
+
+        // 0) Надеть рюкзак
+        if (playerStack.is(ModItems.LUMI_BACKPACK.get()) && !this.hasBackpack()) {
+            if (!this.level().isClientSide) {
+                this.setBackpack(true);
+                if (!player.getAbilities().instabuild) {
+                    playerStack.shrink(1);
+                }
+                this.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
+
+        // 0.5) Снять рюкзак: Shift + пустая рука, пасть пуста
+        if (player.isShiftKeyDown() && playerStack.isEmpty() && mouthStack.isEmpty() && this.hasBackpack()) {
+            if (!this.level().isClientSide) {
+                this.setBackpack(false);
+                ItemStack backpack = new ItemStack(ModItems.LUMI_BACKPACK.get());
+                if (!player.getInventory().add(backpack)) {
+                    player.drop(backpack, false);
+                }
+                this.playSound(SoundEvents.ARMOR_EQUIP_LEATHER, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
 
         // 1) Пустая рука, у Lumi что-то во рту: отдаём предмет
         if (playerStack.isEmpty() && !mouthStack.isEmpty()) {
