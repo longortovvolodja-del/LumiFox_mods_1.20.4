@@ -6,13 +6,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.world.entity.player.Player;
@@ -34,20 +31,22 @@ public class LumiFox extends Fox {
 
     /**
      * Регистрация целей ИИ для LumiFox
-     * Переопределяем методы родителя, чтобы сделать лису более дружелюбной
+     * ВАЖНО: super.registerGoals() обязателен, иначе ванильная лиса падает при появлении
      */
     @Override
     protected void registerGoals() {
-        // Приоритетные цели
-        this.goalSelector.addGoal(0, new FloatGoal(this)); // Плавание
+        super.registerGoals();
 
-        // Следование за игроком с сладкими ягодами
-        this.goalSelector.addGoal(1, new TemptGoal(this, 1.0D, Ingredient.of(Items.SWEET_BERRIES), false));
+        // Следование за игроком со сладкими ягодами
+        this.goalSelector.addGoal(5, new TemptGoal(this, 1.0D, Ingredient.of(Items.SWEET_BERRIES), false));
+    }
 
-        // Повседневные цели
-        this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 6.0F)); // Смотреть на игрока
-        this.goalSelector.addGoal(3, new RandomStrollGoal(this, 0.8D)); // Случайное перемещение
-        this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 0.8D)); // Избегание воды
+    /**
+     * Lumi мирная: не нападает ни на кого (куры, кролики и т.д.)
+     */
+    @Override
+    public boolean canAttack(LivingEntity target) {
+        return false;
     }
 
     /**
@@ -64,9 +63,6 @@ public class LumiFox extends Fox {
 
     /**
      * Обработка взаимодействия с игроком
-     * @param player игрок
-     * @param hand рука
-     * @return результат взаимодействия
      */
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
@@ -86,30 +82,16 @@ public class LumiFox extends Fox {
         return super.mobInteract(player, hand);
     }
 
-    /**
-     * Определение, может ли лиса быть размножена
-     * @param itemStack предмет для проверки
-     * @return true если предмет подходит для размножения
-     */
     @Override
     public boolean isFood(ItemStack itemStack) {
         return itemStack.is(Items.SWEET_BERRIES);
     }
 
-    /**
-     * Звук AMBIENT (окружающие звуки)
-     * @return SoundEvent
-     */
     @Override
     protected SoundEvent getAmbientSound() {
         return SoundEvents.FOX_AMBIENT;
     }
 
-    /**
-     * Звук при получении урона
-     * @param damageSource источник урона
-     * @return SoundEvent
-     */
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
         return SoundEvents.FOX_HURT;
