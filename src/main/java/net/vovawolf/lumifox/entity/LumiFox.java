@@ -6,6 +6,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -62,18 +63,51 @@ public class LumiFox extends Fox {
     }
 
     /**
-     * Обработка взаимодействия с игроком
+     * Взаимодействие с игроком:
+     *  - ПКМ пустой рукой: Lumi отдаёт предмет из пасти
+     *  - Shift + ПКМ предметом: Lumi берёт один такой предмет в пасть (если пасть свободна)
+     *  - ПКМ сладкими ягодами: лечит Lumi
      */
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        ItemStack itemstack = player.getItemInHand(hand);
+        // Обрабатываем только основную руку, чтобы не срабатывало дважды
+        if (hand != InteractionHand.MAIN_HAND) {
+            return super.mobInteract(player, hand);
+        }
 
-        // Если игрок держит сладкие ягоды, можно покормить лису
-        if (itemstack.is(Items.SWEET_BERRIES)) {
+        ItemStack playerStack = player.getItemInHand(hand);
+        ItemStack mouthStack = this.getItemBySlot(EquipmentSlot.MAINHAND);
+
+        // 1) Пустая рука, у Lumi что-то во рту: отдаём предмет
+        if (playerStack.isEmpty() && !mouthStack.isEmpty()) {
             if (!this.level().isClientSide) {
-                this.heal(2.0F); // Лечим лису
+                ItemStack given = mouthStack.copy();
+                this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+                if (!player.getInventory().add(given)) {
+                    player.drop(given, false);
+                }
+                this.playSound(SoundEvents.FOX_SNIFF, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
+
+        // 2) Shift + предмет в руке, пасть свободна: берём один предмет
+        if (player.isShiftKeyDown() && !playerStack.isEmpty() && mouthStack.isEmpty()) {
+            if (!this.level().isClientSide) {
+                ItemStack taken = playerStack.split(1);
+                this.setItemSlot(EquipmentSlot.MAINHAND, taken);
+                this.setGuaranteedDrop(EquipmentSlot.MAINHAND); // при гибели предмет выпадет обязательно
+                this.playSound(SoundEvents.FOX_SNIFF, 1.0F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
+
+        // 3) Обычный ПКМ ягодами: лечим лису
+        if (playerStack.is(Items.SWEET_BERRIES)) {
+            if (!this.level().isClientSide) {
+                this.heal(2.0F);
                 if (!player.isCreative()) {
-                    itemstack.shrink(1); // Уменьшаем количество ягод
+                    playerStack.shrink(1);
                 }
             }
             return InteractionResult.sidedSuccess(this.level().isClientSide);
