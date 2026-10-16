@@ -73,7 +73,8 @@ public class LumiFoxSpawnEggItem extends SpawnEggItem {
     public void appendHoverText(ItemStack stack, Level level, List<Component> tooltipComponents, TooltipFlag flag) {
         tooltipComponents.add(Component.translatable("item.lumifox.lumi_fox_spawn_egg.desc")
                 .withStyle(net.minecraft.ChatFormatting.GOLD));
-        tooltipComponents.add(Component.literal("Умная лисичка Lumi - ваш верный друг!"));
+        tooltipComponents.add(Component.translatable("item.lumifox.lumi_fox_spawn_egg.desc2")
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
         super.appendHoverText(stack, level, tooltipComponents, flag);
     }
 }

@@ -2,6 +2,8 @@ package net.vovawolf.lumifox.entity.client;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.FoxHeldItemLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -15,8 +17,11 @@ public class LumiFoxRenderer extends MobRenderer<LumiFox, LumiFoxModel<LumiFox>>
     private static final ResourceLocation LUMI_FOX_SLEEP_LOCATION =
             new ResourceLocation("lumifox", "textures/entity/lumifox_sleep.png");
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public LumiFoxRenderer(EntityRendererProvider.Context context) {
         super(context, new LumiFoxModel<>(context.bakeLayer(LumiFoxModel.LAYER_LOCATION)), 0.4F);
+        // Ванильный слой "предмет во рту лисы" (работает и для LumiFox, она наследник Fox)
+        this.addLayer(new FoxHeldItemLayer((RenderLayerParent) this, context.getItemInHandRenderer()));
     }
 
     @Override
