@@ -1,6 +1,5 @@
 package net.vovawolf.lumifox.entity.client;
 
-import net.minecraft.client.model.FoxModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -9,7 +8,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.vovawolf.lumifox.entity.LumiFox;
 
 @OnlyIn(Dist.CLIENT)
-public class LumiFoxRenderer extends MobRenderer<LumiFox, FoxModel<LumiFox>> {
+public class LumiFoxRenderer extends MobRenderer<LumiFox, LumiFoxModel<LumiFox>> {
 
     private static final ResourceLocation LUMI_FOX_LOCATION =
             new ResourceLocation("lumifox", "textures/entity/lumifox.png");
@@ -17,7 +16,7 @@ public class LumiFoxRenderer extends MobRenderer<LumiFox, FoxModel<LumiFox>> {
             new ResourceLocation("lumifox", "textures/entity/lumifox_sleep.png");
 
     public LumiFoxRenderer(EntityRendererProvider.Context context) {
-        super(context, new FoxModel<>(context.bakeLayer(LumiFoxModel.LAYER_LOCATION)), 0.4F);
+        super(context, new LumiFoxModel<>(context.bakeLayer(LumiFoxModel.LAYER_LOCATION)), 0.4F);
     }
 
     @Override

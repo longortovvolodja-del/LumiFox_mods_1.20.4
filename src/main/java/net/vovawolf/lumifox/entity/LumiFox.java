@@ -27,6 +27,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 /**
  * Класс умной лисички Lumi, наследуется от ванильной лисы
@@ -69,6 +70,11 @@ public class LumiFox extends Fox {
                 .add(Attributes.FOLLOW_RANGE, 32.0D); // Дальность следования
     }
     
+    @SubscribeEvent
+static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+    event.registerLayerDefinition(LumiFoxModel.LAYER_LOCATION, LumiFoxModel::createBodyLayer);
+}
+
     /**
      * Обработка взаимодействия с игроком
      * @param player игрок
