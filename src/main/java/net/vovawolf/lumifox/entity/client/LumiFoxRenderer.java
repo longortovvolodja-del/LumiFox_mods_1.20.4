@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.FoxHeldItemLayer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -20,8 +21,9 @@ public class LumiFoxRenderer extends MobRenderer<LumiFox, LumiFoxModel<LumiFox>>
     @SuppressWarnings({"unchecked", "rawtypes"})
     public LumiFoxRenderer(EntityRendererProvider.Context context) {
         super(context, new LumiFoxModel<>(context.bakeLayer(LumiFoxModel.LAYER_LOCATION)), 0.4F);
-        // Ванильный слой "предмет во рту лисы" (работает и для LumiFox, она наследник Fox)
-        this.addLayer(new FoxHeldItemLayer((RenderLayerParent) this, context.getItemInHandRenderer()));
+        // Ванильный слой "предмет во рту лисы": присваиваем "сырому" типу, чтобы обойти строгие дженерики
+        RenderLayer heldItemLayer = new FoxHeldItemLayer((RenderLayerParent) this, context.getItemInHandRenderer());
+        this.addLayer(heldItemLayer);
     }
 
     @Override
