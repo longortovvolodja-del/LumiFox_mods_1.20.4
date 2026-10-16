@@ -113,7 +113,13 @@ public class LumiMod {
         // Добавляем яйцо призыва LumiFox в спавнеры
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(ModItems.LUMI_FOX_SPAWN_EGG.get());
+            event.accept(ModItems.LUMI_BACKPACK.get());
         }
+            // Рюкзак для Lumi
+    public static final DeferredHolder<Item, Item> LUMI_BACKPACK = ITEMS.register(
+            "lumi_backpack",
+            () -> new Item(new Item.Properties().stacksTo(1))
+    );
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
