@@ -72,22 +72,23 @@ public class LumiFoxModel<T extends LumiFox> extends FoxModel<T> {
                 CubeListBuilder.create().texOffs(0, 32).addBox(-2.0F, 0.0F, -1.0F, 4.0F, 5.0F, 5.0F),
                 PartPose.offset(4.0F, 5.0F, 0.0F));
 
-        // Геометрия деталей восстановлена по экспорту Blockbench lumifox.java.
-        // Компенсируем базовый поворот body (-90°), чтобы широкая сторона рюкзака
-        // лежала на спине, а не вставала ребром. Центр сохранён в текущем месте.
+        // Рюкзак находится в локальных координатах корпуса без дополнительного
+        // поворота. body уже поворачивается на +90° X в ванильной модели лисы;
+        // второй поворот здесь разворачивал рюкзак поперёк спины в сидячей/лежачей позе.
         PartDefinition pack = body.addOrReplaceChild("backpack", CubeListBuilder.create(),
-                PartPose.offsetAndRotation(0.0F, 13.0F, 1.6F, -(float) Math.PI / 2.0F, 0.0F, 0.0F));
+                PartPose.offset(0.0F, 0.0F, 0.0F));
         pack.addOrReplaceChild("bag", CubeListBuilder.create().texOffs(16, 38)
-                        .addBox(-4.0F, -5.0F, -3.0F, 8.0F, 2.0F, 8.0F)
-                        .texOffs(28, 35).addBox(-4.0F, 3.25F, -0.5F, 8.0F, 1.0F, 2.0F)
-                        .texOffs(6, 42).addBox(3.1F, -0.75F, -0.5F, 1.0F, 4.0F, 2.0F)
-                        .texOffs(0, 42).addBox(-4.1F, -0.75F, -0.5F, 1.0F, 4.0F, 2.0F)
-                        .texOffs(16, 39).addBox(3.0F, -3.0F, -1.0F, 1.0F, 4.0F, 3.0F)
-                        .texOffs(40, 39).addBox(-4.0F, -3.0F, -1.0F, 1.0F, 4.0F, 3.0F),
-                PartPose.offset(0.0F, 0.0F, 1.0F));
+                        .addBox(-4.0F, 5.0F, -5.5F, 8.0F, 8.0F, 2.0F)  // широкая задняя панель
+                        .texOffs(28, 35).addBox(-4.0F, 7.5F, -3.6F, 8.0F, 2.0F, 0.7F)
+                        .texOffs(6, 42).addBox(3.1F, 7.5F, -4.4F, 1.0F, 2.0F, 1.0F)
+                        .texOffs(0, 42).addBox(-4.1F, 7.5F, -4.4F, 1.0F, 2.0F, 1.0F)
+                        .texOffs(16, 39).addBox(3.0F, 7.0F, -4.8F, 1.0F, 3.0F, 1.5F)
+                        .texOffs(40, 39).addBox(-4.0F, 7.0F, -4.8F, 1.0F, 3.0F, 1.5F),
+                PartPose.ZERO);
+        // Клапан расположен на внешней стороне рюкзака; поворот небольшой и локальный.
         pack.addOrReplaceChild("flap",
-                CubeListBuilder.create().texOffs(15, 33).addBox(-5.75F, -2.0F, -1.0F, 5.5F, 2.0F, 2.0F),
-                PartPose.offsetAndRotation(3.0F, -2.75F, 5.0F, -0.3927F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(15, 33).addBox(-2.75F, -1.0F, -0.5F, 5.5F, 2.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, 5.5F, -5.5F, -0.3927F, 0.0F, 0.0F));
 
         return LayerDefinition.create(mesh, 48, 48);
     }
