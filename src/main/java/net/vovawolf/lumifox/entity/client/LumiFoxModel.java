@@ -72,20 +72,20 @@ public class LumiFoxModel<T extends LumiFox> extends FoxModel<T> {
                 CubeListBuilder.create().texOffs(0, 32).addBox(-2.0F, 0.0F, -1.0F, 4.0F, 5.0F, 5.0F),
                 PartPose.offset(4.0F, 5.0F, 0.0F));
 
-        // Рюкзак перенесён внутрь body: теперь он повторяет наклон корпуса при сидении и сне.
-        // Координаты кубов пересчитаны из исходной системы модели LumiFox_5.bbmodel.
+        // Геометрия рюкзака перенесена из экспорта Blockbench lumifox.java.
+        // У текущей модели body имеет смещение по Z -6, поэтому компенсируем его смещением +6.
         PartDefinition pack = body.addOrReplaceChild("backpack", CubeListBuilder.create()
-                        .texOffs(16, 38).addBox(-4.0F, 5.0F, 2.5F, 8.0F, 8.0F, 2.0F)   // верхняя плита
-                        .texOffs(28, 35).addBox(-4.0F, 7.5F, -3.75F, 8.0F, 2.0F, 1.0F) // нижняя планка
-                        .texOffs(6, 42).addBox(3.1F, 7.5F, 0.25F, 1.0F, 2.0F, 4.0F)   // боковая лямка
-                        .texOffs(0, 42).addBox(-4.1F, 7.5F, 0.25F, 1.0F, 2.0F, 4.0F) // боковая лямка
-                        .texOffs(16, 39).addBox(3.0F, 7.0F, 2.5F, 1.0F, 3.0F, 4.0F)  // боковой карман
-                        .texOffs(40, 39).addBox(-4.0F, 7.0F, 2.5F, 1.0F, 3.0F, 4.0F),// боковой карман
-                PartPose.ZERO);
-        // Клапан остаётся отдельной частью рюкзака и наклоняется вместе с корпусом.
+                        .texOffs(16, 38).addBox(-4.0F, -5.0F, -3.0F, 8.0F, 2.0F, 8.0F)
+                        .texOffs(28, 35).addBox(-4.0F, 3.25F, -0.5F, 8.0F, 1.0F, 2.0F)
+                        .texOffs(6, 42).addBox(3.1F, -0.75F, -0.5F, 1.0F, 4.0F, 2.0F)
+                        .texOffs(0, 42).addBox(-4.1F, -0.75F, -0.5F, 1.0F, 4.0F, 2.0F)
+                        .texOffs(16, 39).addBox(3.0F, -3.0F, -1.0F, 1.0F, 4.0F, 3.0F)
+                        .texOffs(40, 39).addBox(-4.0F, -3.0F, -1.0F, 1.0F, 4.0F, 3.0F),
+                PartPose.offset(0.0F, 0.0F, 7.0F));
+        // Клапан с точными координатами из экспорта Blockbench.
         pack.addOrReplaceChild("flap",
-                CubeListBuilder.create().texOffs(15, 33).addBox(-2.75F, -1.0F, -1.0F, 5.5F, 2.0F, 2.0F),
-                PartPose.offsetAndRotation(0.0F, 13.0F, 3.25F, -0.3926991F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(15, 33).addBox(-5.75F, -2.0F, -1.0F, 5.5F, 2.0F, 2.0F),
+                PartPose.offsetAndRotation(3.0F, -2.75F, 5.0F, -0.3927F, 0.0F, 0.0F));
 
         return LayerDefinition.create(mesh, 48, 48);
     }
