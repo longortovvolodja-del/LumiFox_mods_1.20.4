@@ -100,21 +100,15 @@ public class LumiFoxModel<T extends LumiFox> extends FoxModel<T> {
         // Рюкзак виден только когда надет
         this.backpack.visible = entity.hasBackpack();
 
-        // У сидящей и спящей лисы корпус сильно меняет угол. Чуть поднимаем
-        // рюкзак и прижимаем к корпусу в этих позах, не меняя положение стоя.
+        // Рюкзак является дочерней частью body, поэтому автоматически следует за
+        // позой корпуса. Не добавляем отдельных сдвигов для сна/сидения: они отрывали
+        // рюкзак от спины, когда ванильная модель поворачивала корпус.
         this.backpack.x = 0.0F;
         this.backpack.y = 0.0F;
         this.backpack.z = 0.0F;
         this.backpack.xRot = 0.0F;
         this.backpack.yRot = 0.0F;
         this.backpack.zRot = 0.0F;
-        if (entity.isSleeping()) {
-            this.backpack.y = -1.5F;
-            this.backpack.z = 1.5F;
-        } else if (entity.isSitting()) {
-            this.backpack.y = -2.0F;
-            this.backpack.z = 1.0F;
-        }
 
         if (entity.isSleeping()) {
             this.tailMain.zRot = 0.0F;
