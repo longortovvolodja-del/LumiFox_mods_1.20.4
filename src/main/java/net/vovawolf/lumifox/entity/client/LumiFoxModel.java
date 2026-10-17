@@ -72,21 +72,21 @@ public class LumiFoxModel<T extends LumiFox> extends FoxModel<T> {
                 CubeListBuilder.create().texOffs(0, 32).addBox(-2.0F, 0.0F, -1.0F, 4.0F, 5.0F, 5.0F),
                 PartPose.offset(4.0F, 5.0F, 0.0F));
 
-        // Рюкзак размещён в системе координат текущего FoxModel:
-        // body повёрнут на 90 градусов по X, поэтому продольная ось модели — Y,
-        // а верх спины находится со стороны отрицательного Z.
+        // Корпус повёрнут на +90° по X. Его верхняя поверхность в локальных
+        // координатах находится со стороны +Z (z = 2.5), а не -Z.
+        // Поэтому рюкзак располагается над спиной, вдоль корпуса, с небольшим зазором.
         PartDefinition pack = body.addOrReplaceChild("backpack", CubeListBuilder.create()
-                        .texOffs(16, 38).addBox(-4.0F, 5.0F, -5.0F, 8.0F, 8.0F, 2.0F)   // корпус рюкзака
-                        .texOffs(28, 35).addBox(-4.0F, 7.5F, -3.1F, 8.0F, 2.0F, 1.0F) // нижняя планка
-                        .texOffs(6, 42).addBox(3.1F, 7.5F, -4.0F, 1.0F, 2.0F, 1.0F)   // боковая лямка
-                        .texOffs(0, 42).addBox(-4.1F, 7.5F, -4.0F, 1.0F, 2.0F, 1.0F) // боковая лямка
-                        .texOffs(16, 39).addBox(3.0F, 7.0F, -4.5F, 1.0F, 3.0F, 1.5F) // боковой карман
-                        .texOffs(40, 39).addBox(-4.0F, 7.0F, -4.5F, 1.0F, 3.0F, 1.5F),
+                        .texOffs(16, 38).addBox(-4.0F, 5.0F, 2.6F, 8.0F, 8.0F, 2.0F)   // корпус
+                        .texOffs(28, 35).addBox(-4.0F, 7.5F, 2.0F, 8.0F, 2.0F, 0.7F) // нижняя планка
+                        .texOffs(6, 42).addBox(3.1F, 7.5F, 1.8F, 1.0F, 2.0F, 1.0F)   // боковая лямка
+                        .texOffs(0, 42).addBox(-4.1F, 7.5F, 1.8F, 1.0F, 2.0F, 1.0F) // боковая лямка
+                        .texOffs(16, 39).addBox(3.0F, 7.0F, 2.0F, 1.0F, 3.0F, 1.5F) // боковой карман
+                        .texOffs(40, 39).addBox(-4.0F, 7.0F, 2.0F, 1.0F, 3.0F, 1.5F),
                 PartPose.ZERO);
-        // Клапан расположен сзади рюкзака и наследует все повороты корпуса.
+        // Клапан находится на верхней стороне рюкзака и наследует позу корпуса.
         pack.addOrReplaceChild("flap",
-                CubeListBuilder.create().texOffs(15, 33).addBox(-2.75F, -1.0F, -0.5F, 5.5F, 2.0F, 1.0F),
-                PartPose.offsetAndRotation(0.0F, 6.0F, -5.0F, -0.3927F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(15, 33).addBox(-2.75F, -1.0F, 0.0F, 5.5F, 2.0F, 1.0F),
+                PartPose.offsetAndRotation(0.0F, 6.0F, 4.5F, -0.3927F, 0.0F, 0.0F));
 
         return LayerDefinition.create(mesh, 48, 48);
     }
